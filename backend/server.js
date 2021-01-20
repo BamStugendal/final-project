@@ -9,30 +9,25 @@ const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/auth";
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.Promise = Promise;
 
-/*
-BACK
-- SQL Injection for mongo
-- bcrypt and access token
-- try/catch in the backend
-- Print error message from catch
-FRONT
-- Fetch to login
-- Access Token in the frontend
-- Github in groups
-*/
-
-const User = mongoose.model("User", {
-  name: {
+// Mongoose model for poster
+const User = mongoose.model("Poster", {
+  title: {
     type: String,
-    unique: true,
   },
-  password: {
+  description: {
     type: String,
-    required: true,
   },
-  accessToken: {
+  price: {
+    type: Number,
+  },
+  width: {
+    type: Number,
+  },
+  higth: {
+    type: Number,
+  },
+  image: {
     type: String,
-    default: () => crypto.randomBytes(128).toString("hex"),
   },
 });
 
@@ -44,19 +39,11 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const authenticateUser = async (req, res, next) => {
-  next();
-};
-
-// Create user  - sign up
-app.post("/users", async (req, res) => {});
-
-// Secure endpoint, user needs to be logged in to access this.
-app.get("/users/:id", authenticateUser);
-app.get("/users/:id", (req, res) => {});
-
-// login user
-app.post("/sessions", async (req, res) => {});
+// ROUTES
+app.get('/', (req, res) => {
+  console.log('test')
+  res.send('Hello world')
+})
 
 // Start the server
 app.listen(port, () => {
