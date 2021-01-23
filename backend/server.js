@@ -5,12 +5,14 @@ import mongoose from "mongoose";
 import crypto from "crypto";
 import bcrypt from "bcrypt-nodejs";
 
-const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/auth";
+import posterData from './data/posters.json'
+
+const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/posters";
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.Promise = Promise;
 
 // Mongoose model for poster
-const User = mongoose.model("Poster", {
+const Poster = mongoose.model("Poster", {
   title: {
     type: String,
   },
@@ -29,7 +31,20 @@ const User = mongoose.model("Poster", {
   image: {
     type: String,
   },
-});
+})
+
+if (process.env.RESET_DATABASE) {
+  const seedDatabase = async () => {
+    await Poster.deleteMany()
+  
+    posterData.forEach(item => {
+      const newPoster = new Poster(item)
+      newPoster.save()
+    })
+  
+  }
+  seedDatabase()
+} 
 
 //   PORT=9000 npm start
 const port = process.env.PORT || 8080;
@@ -43,6 +58,16 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   console.log('test')
   res.send('Hello world')
+})
+
+app.get('/posters', async (req, res) => {
+  const allPosters = await Poster.find()
+  res.json(allPosters)
+})
+
+app.get('/posters/:poster_id', async (req, res) => {
+  const singlePoster = await Show.findOne({ poster_id: req.params.poster_id })
+  res.json(singlePoster)
 })
 
 // Start the server
